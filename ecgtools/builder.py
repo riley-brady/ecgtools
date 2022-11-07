@@ -139,11 +139,11 @@ class Builder:
         self.df = pd.DataFrame()
 
     def get_assets(self):
-        assets = [directory.walk() for directory in self._root_dirs]
-        self.assets = sorted(toolz.unique(toolz.concat(assets)))
+        # assets = [directory.walk() for directory in self._root_dirs]
+        # self.assets = sorted(toolz.unique(toolz.concat(assets)))
+        self.assets = self.paths
         return self
 
-    @pydantic.validate_arguments
     def parse(self, *, parsing_func: typing.Callable, parsing_func_kwargs: dict = None):
         if not self.assets:
             raise ValueError('asset list provided is None. Please run `.get_assets()` first')
@@ -170,10 +170,8 @@ class Builder:
             self.df = df
         return self
 
-    @pydantic.validate_arguments
     def build(
         self,
-        *,
         parsing_func: typing.Callable,
         parsing_func_kwargs: dict = None,
         postprocess_func: typing.Callable = None,
@@ -208,10 +206,8 @@ class Builder:
             self.df = postprocess_func(self.df, **postprocess_func_kwargs)
         return self
 
-    @pydantic.validate_arguments
     def save(
         self,
-        *,
         name: str,
         path_column_name: str,
         variable_column_name: str,
