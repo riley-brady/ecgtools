@@ -3,6 +3,7 @@ joblib
 netCDF4
 xarray
 pyyaml
+pydantic
 pandas
 fsspec
 intake-esm

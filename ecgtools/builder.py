@@ -8,6 +8,7 @@ import warnings
 import fsspec
 import joblib
 import pandas as pd
+import pydantic
 import toolz
 from intake_esm.cat import (
     Aggregation,
@@ -28,12 +29,12 @@ def glob_to_regex(*, include_patterns, exclude_patterns):
     return include_regex, exclude_regex
 
 
-class RootDirectory:
+class RootDirectory(pydantic.BaseModel):
     path: str
     depth: int = 0
-    storage_options: typing.Dict[typing.Any, typing.Any]
-    exclude_regex: str
-    include_regex: str
+    storage_options: typing.Dict[typing.Any, typing.Any] = pydantic.Field(default_factory=dict)
+    exclude_regex: str = pydantic.Field(default_factory=str)
+    include_regex: str = pydantic.Field(default_factory=str)
 
     def __hash__(self):
         return hash(f'{self.path}{self.raw_path}')
@@ -84,6 +85,7 @@ class RootDirectory:
         return all_assets
 
 
+@pydantic.dataclasses.dataclass
 class Builder:
     """Generates a catalog from a list of netCDF files or zarr stores
 
@@ -137,6 +139,8 @@ class Builder:
         self.df = pd.DataFrame()
 
     def get_assets(self):
+        # assets = [directory.walk() for directory in self._root_dirs]
+        # self.assets = sorted(toolz.unique(toolz.concat(assets)))
         self.assets = self.paths
         return self
 
